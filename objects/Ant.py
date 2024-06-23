@@ -76,8 +76,11 @@ class Ant:
         self.path.append((self.x, self.y))  # Memorize current position
 
         # Influence by pheromones
-        if random.random() < 0.1:  # 10% chance of being influenced by pheromones
-            self.influence_by_pheromones(pheromones)
+        if self.pheromones_are_arround(pheromones):
+            if random.random() < 0.8:  # 10% chance of being influenced by pheromones
+                self.influence_by_pheromones(pheromones)
+            else :
+                self.direction = (self.direction + random.choice([-1, 1])) % 4
         else:
             # Choose randomly to turn right or left
             self.direction = (self.direction + random.choice([-1, 1])) % 4
@@ -124,3 +127,17 @@ class Ant:
         max_pheromones = max(pheromone_levels)
         if max_pheromones > 0:
             self.direction = pheromone_levels.index(max_pheromones)
+
+    def pheromones_are_arround(self, pheromones):
+        """
+        Check if there are pheromones around the Ant.
+
+        Args:
+            pheromones (numpy.ndarray): pheromone levels in the environment
+            x (int): x-coordinate of the Ant
+            y (int): y-coordinate of the Ant
+        """
+        for dx, dy in directions:
+            if pheromones[(self.x + dx) % self.config.cols, (self.y + dy) % self.config.rows] > 0:
+                return True
+        return False
